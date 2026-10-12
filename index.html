@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chatbox: chat without a password</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf6f0;--card:#fff;--card2:#f3ebe1;--line:rgba(60,30,10,.1);--text:#25160f;--dim:#7d6a5e;--amber:#ffb43b;--amber2:#ff9a2e;--ink:#2a1205;--atext:#b45f00;--glow:rgba(255,180,59,.28);--nav:rgba(251,246,240,.82)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14090c;--card:#1d0f13;--card2:#28151a;--line:rgba(255,236,220,.09);--text:#f7ede5;--dim:#b99f93;--atext:#ffb43b;--glow:rgba(255,154,46,.18);--nav:rgba(20,9,12,.8)}}
+:root[data-theme="dark"]{--bg:#14090c;--card:#1d0f13;--card2:#28151a;--line:rgba(255,236,220,.09);--text:#f7ede5;--dim:#b99f93;--atext:#ffb43b;--glow:rgba(255,154,46,.18);--nav:rgba(20,9,12,.8)}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Manrope,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--nav);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:20px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.4px;margin-right:auto}
+.lm{width:34px;height:34px;border-radius:11px;background:var(--amber);display:grid;place-items:center}
+.lm svg{width:19px;height:19px}
+nav .lk{font-size:14px;font-weight:600;color:var(--dim)}
+nav .lk:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 24px;border-radius:15px;font-weight:800;font-size:15px;transition:transform .15s,box-shadow .2s;border:1px solid var(--line);background:var(--card);cursor:pointer}
+.btn:hover{transform:translateY(-2px)}
+.btn.pri{background:var(--amber);color:var(--ink);border-color:transparent;box-shadow:0 10px 28px var(--glow)}
+.btn.sm{height:40px;padding:0 18px;font-size:14px;border-radius:12px}
+#tgl{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;color:var(--text);font-size:16px}
+.hero{position:relative;padding:56px 0 70px;overflow:hidden}
+.blob{position:absolute;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 70%);filter:blur(10px);animation:drift 14s ease-in-out infinite;pointer-events:none}
+.b1{width:520px;height:520px;top:-160px;left:-140px}
+.b2{width:420px;height:420px;bottom:-120px;right:-80px;animation-delay:-6s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,36px) scale(1.12)}}
+.hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:46px;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:20px;background:var(--card);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--dim);margin-bottom:22px}
+.tag i{width:8px;height:8px;border-radius:50%;background:#3ec28a;animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(62,194,138,.6)}100%{box-shadow:0 0 0 10px rgba(62,194,138,0)}}
+h1{font-size:clamp(38px,8vw,66px);line-height:1.04;font-weight:800;letter-spacing:-2px;margin-bottom:20px}
+h1 em{font-style:normal;color:var(--atext);position:relative;white-space:nowrap}
+h1 em::after{content:"";position:absolute;left:0;bottom:2px;height:8px;width:100%;background:var(--amber);opacity:.35;border-radius:4px;transform-origin:left;animation:ul 1.1s .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ul{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.lead{font-size:18px;color:var(--dim);max-width:480px;margin-bottom:30px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.mo{margin-top:16px;font-size:13.5px;font-weight:600;color:var(--dim)}
+.in1{animation:up .8s both}.in2{animation:up .8s .12s both}.in3{animation:up .8s .24s both}.in4{animation:up .8s .36s both}
+@keyframes up{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+.phone-w{display:flex;justify-content:center;position:relative;animation:up 1s .3s both}
+.phone{width:290px;height:540px;border-radius:38px;background:var(--card);border:8px solid var(--text);position:relative;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.28);animation:float 6s ease-in-out infinite;display:flex;flex-direction:column}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-14px) rotate(1deg)}}
+.ph-h{display:flex;align-items:center;gap:10px;padding:18px 14px 12px;border-bottom:1px solid var(--line);background:var(--card)}
+.av{width:36px;height:36px;border-radius:50%;background:var(--card2);display:grid;place-items:center;font-size:17px;position:relative}
+.av::after{content:"";position:absolute;right:-1px;bottom:0;width:10px;height:10px;border-radius:50%;background:#3ec28a;border:2px solid var(--card)}
+.ph-h b{font-size:14px;display:block;line-height:1.2}.ph-h small{font-size:11px;color:#3ec28a;font-weight:600}
+.ph-m{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden;background:var(--bg);justify-content:flex-end}
+.m{max-width:80%;padding:9px 13px;border-radius:18px;font-size:13.5px;font-weight:500;animation:pop .35s cubic-bezier(.2,1.3,.4,1) both}
+.m.in{align-self:flex-start;background:var(--card2);border-bottom-left-radius:5px}
+.m.out{align-self:flex-end;background:var(--amber);color:var(--ink);border-bottom-right-radius:5px}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.85)}to{opacity:1;transform:none}}
+.typing{align-self:flex-start;background:var(--card2);padding:12px 15px;border-radius:18px;display:flex;gap:4px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--dim);animation:dot 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+.ph-c{display:flex;gap:8px;padding:10px 12px 14px;background:var(--card)}
+.ph-c div{flex:1;height:38px;border-radius:19px;background:var(--card2);font-size:12.5px;color:var(--dim);display:flex;align-items:center;padding:0 14px}
+.ph-c i{width:38px;height:38px;border-radius:50%;background:var(--amber);flex:none}
+.chip{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:9px 14px;font-size:12.5px;font-weight:600;box-shadow:0 12px 30px rgba(0,0,0,.15);animation:bob 5s ease-in-out infinite;white-space:nowrap}
+.c1{left:-4px;top:70px}.c2{right:-4px;bottom:110px;animation-delay:-2.5s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.strip{border-block:1px solid var(--line);overflow:hidden;background:var(--card);padding:16px 0}
+.track{display:flex;gap:46px;width:max-content;animation:mq 26s linear infinite;font-weight:800;font-size:19px;letter-spacing:-.3px;color:var(--dim)}
+.track span::before{content:"\2726";color:var(--amber);margin-right:46px}
+@keyframes mq{to{transform:translateX(-50%)}}
+section{padding:84px 0}
+.k{font-size:13px;font-weight:800;color:var(--atext);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+h2{font-size:clamp(28px,5vw,42px);line-height:1.1;font-weight:800;letter-spacing:-1.2px;margin-bottom:14px;max-width:620px}
+.sub{color:var(--dim);font-size:17px;max-width:540px;margin-bottom:44px}
+.steps{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:26px;transition:transform .25s,border-color .25s}
+.card:hover{transform:translateY(-6px);border-color:var(--amber)}
+.n{width:38px;height:38px;border-radius:12px;background:var(--amber);color:var(--ink);font-weight:800;display:grid;place-items:center;margin-bottom:16px}
+.card h3{font-size:19px;font-weight:800;margin-bottom:6px;letter-spacing:-.3px}
+.card p{color:var(--dim);font-size:15px}
+.seed{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:18px}
+.seed span{background:var(--card2);border-radius:9px;padding:7px 4px;font-size:11.5px;font-weight:600;text-align:center;opacity:0}
+.vis .seed span{animation:pop .4s calc(var(--i)*.09s) both}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.f{padding:22px}
+.f .ic{width:46px;height:46px;border-radius:15px;background:var(--card2);display:grid;place-items:center;font-size:22px;margin-bottom:14px;transition:transform .3s}
+.f:hover .ic{transform:rotate(-10deg) scale(1.12)}
+.f h3{font-size:16px}.f p{font-size:13.5px}
+.big{text-align:center;background:var(--card);border:1px solid var(--line);border-radius:36px;padding:64px 24px;position:relative;overflow:hidden}
+.big h2{margin-inline:auto}.big .sub{margin-inline:auto;margin-bottom:28px}
+.big .cta{justify-content:center}
+footer{padding:34px 0 46px;color:var(--dim);font-size:13.5px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+.js .rv{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--d,0)*90ms)}
+.js .rv.vis{opacity:1;transform:none}
+nav .hide{display:none}
+@media (min-width:760px){
+  .hero .wrap{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}
+  .steps{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  nav .hide{display:inline}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.js .rv{opacity:1;transform:none}.seed span{opacity:1}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="logo" href="#top"><span class="lm"><svg viewBox="0 0 24 24" fill="none" stroke="#2a1205" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span>Chatbox</a>
+  <a class="lk hide" href="#how">How it works</a><a class="lk hide" href="#features">Features</a>
+  <button id="tgl" aria-label="Toggle theme">&#9680;</button>
+  <a class="btn pri sm" href="https://drive.google.com/file/d/1JFdptvyaPvDGV9u41nWUkuzJSWthcl89/view?usp=drive_link" target="_blank" rel="noopener">Open app</a>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="wrap">
+    <div>
+      <div class="tag in1"><i></i>Now live. Mobile only</div>
+      <h1 class="in2">Chat without a <em>password.</em></h1>
+      <p class="lead in3">Chatbox gives you an account made of 12 words. No email, no phone number, nothing to verify. Just messages, calls, and your people.</p>
+      <div class="cta in4"><a class="btn pri" href="https://drive.google.com/file/d/1JFdptvyaPvDGV9u41nWUkuzJSWthcl89/view?usp=drive_link" target="_blank" rel="noopener">Create your identity</a><a class="btn" href="#how">See how it works</a></div>
+      <p class="mo in4">Only for mobile phones. Not available on desktop.</p>
+    </div>
+    <div class="phone-w">
+      <div class="chip c1">Signed with your key</div>
+      <div class="phone">
+        <div class="ph-h"><div class="av">&#129418;</div><div><b>Aarav</b><small>online</small></div></div>
+        <div class="ph-m" id="chat"></div>
+        <div class="ph-c"><div>Message</div><i></i></div>
+      </div>
+      <div class="chip c2">Voice and video calls</div>
+    </div>
+  </div>
+</header>
+
+<div class="strip"><div class="track" aria-hidden="true">
+  <span>No email</span><span>No phone number</span><span>No password</span><span>Just 12 words</span>
+  <span>No email</span><span>No phone number</span><span>No password</span><span>Just 12 words</span>
+</div></div>
+
+<section id="how"><div class="wrap">
+  <div class="k rv">How it works</div>
+  <h2 class="rv" style="--d:1">Three steps. About thirty seconds.</h2>
+  <p class="sub rv" style="--d:2">Your seed phrase creates a private key on your device. That key is how you sign in and sign every message.</p>
+  <div class="steps">
+    <div class="card rv" style="--d:1"><div class="n">1</div><h3>Get your 12 words</h3><p>Tap create and Chatbox generates your seed phrase.</p>
+      <div class="seed"><span style="--i:1">ocean</span><span style="--i:2">purple</span><span style="--i:3">silent</span><span style="--i:4">falcon</span><span style="--i:5">ember</span><span style="--i:6">velvet</span><span style="--i:7">tunnel</span><span style="--i:8">winter</span><span style="--i:9">lantern</span><span style="--i:10">copper</span><span style="--i:11">temple</span><span style="--i:12">matrix</span></div></div>
+    <div class="card rv" style="--d:2"><div class="n">2</div><h3>Save them somewhere safe</h3><p>Write them down. They're the only way back into your account, and nobody can reset them for you.</p></div>
+    <div class="card rv" style="--d:3"><div class="n">3</div><h3>Pick a name and start</h3><p>Choose a display name and avatar, then search a friend by @username or public key.</p></div>
+  </div>
+</div></section>
+
+<section id="features" style="padding-top:20px"><div class="wrap">
+  <div class="k rv">Features</div>
+  <h2 class="rv" style="--d:1">Everything you expect from a chat app.</h2>
+  <p class="sub rv" style="--d:2">Built to feel fast and familiar on your phone.</p>
+  <div class="grid">
+    <div class="card f rv" style="--d:1"><div class="ic">&#128273;</div><h3>Seed-phrase login</h3><p>One account, zero passwords to forget or leak.</p></div>
+    <div class="card f rv" style="--d:2"><div class="ic">&#9997;&#65039;</div><h3>Signed messages</h3><p>Every message is signed with your private key.</p></div>
+    <div class="card f rv" style="--d:3"><div class="ic">&#128101;</div><h3>Groups and invites</h3><p>Start a group and share an invite link in a tap.</p></div>
+    <div class="card f rv" style="--d:1"><div class="ic">&#128222;</div><h3>Voice and video</h3><p>Call a friend straight from the chat screen.</p></div>
+    <div class="card f rv" style="--d:2"><div class="ic">&#10024;</div><h3>Text AI</h3><p>An assistant for writing, ideas, and quick answers.</p></div>
+    <div class="card f rv" style="--d:3"><div class="ic">&#127763;</div><h3>Dark and light</h3><p>Easy on the eyes at midnight, crisp in daylight.</p></div>
+  </div>
+</div></section>
+
+<section id="get" style="padding-top:20px"><div class="wrap">
+  <div class="big rv">
+    <div class="blob b2" style="right:auto;left:30%;bottom:-260px"></div>
+    <h2 style="position:relative">Your account is 12 words away.</h2>
+    <p class="sub" style="position:relative">Create an identity and send your first message in under a minute.</p>
+    <div class="cta" style="position:relative"><a class="btn pri" href="https://drive.google.com/file/d/1JFdptvyaPvDGV9u41nWUkuzJSWthcl89/view?usp=drive_link" target="_blank" rel="noopener">Open Chatbox</a></div>
+    <p class="mo" style="position:relative">Only for mobile phones. Not available on desktop.</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap"><span>&copy; Chatbox</span><span>Keep your seed phrase private. Never share it.</span></div></footer>
+
+<script>
+document.documentElement.classList.add('js');
+var root=document.documentElement,t=document.getElementById('tgl');
+t.onclick=function(){var d=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');root.setAttribute('data-theme',d==='dark'?'light':'dark')};
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target)}})},{threshold:.15});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+var box=document.getElementById('chat'),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var script=[['in','Bro, you joined Chatbox?'],['out','Yep. No sign-up, no OTP'],['in','Wait, how do you log in?'],['out','12 words. That\u2019s the whole account'],['in','Okay, that\u2019s actually cool']];
+function add(t,x){var d=document.createElement('div');d.className='m '+t;d.textContent=x;box.appendChild(d);while(box.children.length>6)box.removeChild(box.firstChild)}
+if(reduce){script.forEach(function(s){add(s[0],s[1])})}
+else{(function step(i){
+  if(i>=script.length){setTimeout(function(){box.innerHTML='';step(0)},3400);return}
+  var s=script[i];
+  if(s[0]==='in'){var ty=document.createElement('div');ty.className='typing';ty.innerHTML='<span></span><span></span><span></span>';box.appendChild(ty);
+    setTimeout(function(){box.removeChild(ty);add(s[0],s[1]);step(i+1)},1100)}
+  else setTimeout(function(){add(s[0],s[1]);step(i+1)},900);
+})(0)}
+</script>
+</body>
+</html>
